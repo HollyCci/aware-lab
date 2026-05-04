@@ -10,8 +10,10 @@ type SettingItem = {
   value?: string;
   pro?: boolean;
   toggle?: boolean;
+  toggleKey?: 'thousandsSeparator' | 'iCloudSyncEnabled' | 'hapticEnabled';
   to?: string;
   custom?: 'theme' | 'home-style';
+  onTap?: () => void;
 };
 
 // 这两张原图是透明 + 浅色描边设计，在暗色卡片上对比度弱，给它们补一个 elev-2 浅底
@@ -22,50 +24,80 @@ export function SettingsPage() {
   const settings = useStore(s => s.settings);
   const updateSettings = useStore(s => s.updateSettings);
 
+  const handleShare = async () => {
+    const shareData = {
+      title: '有数 Aware',
+      text: '记录你的物品，看清每件东西的日均成本',
+      url: window.location.origin,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch { /* 用户取消 */ }
+    } else {
+      await navigator.clipboard.writeText(shareData.url);
+      window.alert('链接已复制到剪贴板');
+    }
+  };
+
+  const handleFeedback = () => window.open('https://github.com/HollyCci/aware-lab/issues/new', '_blank');
+  const handleContact = () => window.open('mailto:hollycci@example.com?subject=有数%20Aware%20反馈', '_blank');
+  const handleRate = () => window.alert('感谢支持！H5 版本暂时没有评分入口，你可以去 App Store 给 iOS 版打分。');
+
+  const decimalLabels: Record<0 | 1 | 2, string> = { 0: '保留 0 位', 1: '保留 1 位', 2: '保留 2 位' };
+  const cycleDecimal = () => {
+    const next = ((settings.decimalPlaces + 1) % 3) as 0 | 1 | 2;
+    updateSettings({ decimalPlaces: next });
+  };
+  const cycleCurrency = () => {
+    const cycle = ['¥', '$', '€', '£', 'HK$'];
+    const idx = cycle.indexOf(settings.currencySymbol);
+    const next = cycle[(idx + 1) % cycle.length] ?? '¥';
+    updateSettings({ currencySymbol: next });
+  };
+
   const groups: { title: string; items: SettingItem[] }[] = [
     {
       title: '数据管理',
       items: [
-        { iconKey: 'icon_common_classify', label: '分类管理' },
-        { iconKey: 'icon_common_label', label: '标签管理' },
-        { iconKey: 'icon_settings_icloud', label: 'iCloud 同步' },
-        { iconKey: 'icon_settings_backup', label: '备份与恢复' },
-        { iconKey: 'icon_settings_pwd', label: '密码与安全' },
+        { iconKey: 'icon_common_classify', label: '分类管理', to: '/settings/categories' },
+        { iconKey: 'icon_common_label', label: '标签管理', to: '/settings/tags' },
+        { iconKey: 'icon_settings_icloud', label: 'iCloud 同步', toggle: true, toggleKey: 'iCloudSyncEnabled', value: 'H5 版本不可用' },
+        { iconKey: 'icon_settings_backup', label: '备份与恢复', to: '/settings/backup' },
+        { iconKey: 'icon_settings_pwd', label: '密码与安全', to: '/settings/lock', value: settings.appLockEnabled ? '已开启' : '未开启' },
       ],
     },
     {
       title: '数值与单位',
       items: [
-        { iconKey: 'icon_settings_unit', label: '货币单位', value: settings.currencySymbol },
+        { iconKey: 'icon_settings_unit', label: '货币单位', value: settings.currencySymbol, onTap: cycleCurrency },
         { iconKey: 'icon_settings_timeformat', label: '服役时长单位', value: '天', pro: true },
-        { iconKey: 'icon_settings_decimal', label: '小数点设置', value: `保留 ${settings.decimalPlaces} 位`, pro: true },
-        { iconKey: 'icon_settings_separator', label: '使用千位分隔符', toggle: true, pro: true },
+        { iconKey: 'icon_settings_decimal', label: '小数点设置', value: decimalLabels[settings.decimalPlaces], pro: true, onTap: cycleDecimal },
+        { iconKey: 'icon_settings_separator', label: '使用千位分隔符', toggle: true, toggleKey: 'thousandsSeparator', pro: true },
       ],
     },
     {
       title: '显示与外观',
       items: [
         { iconKey: 'icon_settings_theme', label: '主题模式', custom: 'theme' },
-        { iconKey: 'icon_settings_appicon', label: '应用图标' },
+        { iconKey: 'icon_settings_appicon', label: '应用图标', value: 'iOS 限定' },
         { iconKey: 'icon_settings_homestyle', label: '首页风格', custom: 'home-style' },
-        { iconKey: 'icon_settings_language', label: '语言' },
+        { iconKey: 'icon_settings_language', label: '语言', value: '简体中文' },
         { iconKey: 'icon_settings_quality', label: '画面质量', value: '高' },
       ],
     },
     {
       title: '反馈',
       items: [
-        { iconKey: 'icon_settings_feedback', label: '我要提意见' },
-        { iconKey: 'icon_settings_contact', label: '联系我们' },
-        { iconKey: 'icon_settings_share', label: '分享应用' },
-        { iconKey: 'icon_settings_rate', label: '为我们评分' },
+        { iconKey: 'icon_settings_feedback', label: '我要提意见', onTap: handleFeedback, value: 'GitHub Issues' },
+        { iconKey: 'icon_settings_contact', label: '联系我们', onTap: handleContact, value: '邮件' },
+        { iconKey: 'icon_settings_share', label: '分享应用', onTap: handleShare },
+        { iconKey: 'icon_settings_rate', label: '为我们评分', onTap: handleRate },
       ],
     },
     {
       title: '关于',
       items: [
-        { iconKey: 'icon_settings_terms', label: '用户协议' },
-        { iconKey: 'icon_settings_privacy', label: '隐私政策' },
+        { iconKey: 'icon_settings_terms', label: '用户协议', to: '/settings/terms' },
+        { iconKey: 'icon_settings_privacy', label: '隐私政策', to: '/settings/privacy' },
       ],
     },
   ];
@@ -126,10 +158,19 @@ export function SettingsPage() {
               <SettingRow
                 key={item.label}
                 item={item}
-                themeMode={settings.themeMode}
-                homeStyle={settings.homeStyle}
+                settings={settings}
                 onChangeTheme={(m) => updateSettings({ themeMode: m })}
                 onChangeHomeStyle={(s) => updateSettings({ homeStyle: s })}
+                onToggle={(k) => {
+                  if (k === 'thousandsSeparator') {
+                    updateSettings({ thousandsSeparator: settings.thousandsSeparator === ',' ? '' : ',' });
+                  } else if (k === 'iCloudSyncEnabled') {
+                    window.alert('H5 版本不支持 iCloud 同步，请用「备份与恢复」导出/导入 JSON 替代。');
+                  } else if (k === 'hapticEnabled') {
+                    updateSettings({ hapticEnabled: !settings.hapticEnabled });
+                  }
+                }}
+                onNav={(to) => nav(to)}
               />
             ))}
           </div>
@@ -165,16 +206,36 @@ export function SettingsPage() {
 }
 
 function SettingRow({
-  item, themeMode, homeStyle, onChangeTheme, onChangeHomeStyle,
+  item, settings, onChangeTheme, onChangeHomeStyle, onToggle, onNav,
 }: {
   item: SettingItem;
-  themeMode: 'dark' | 'light' | 'system';
-  homeStyle: 'card' | 'list';
+  settings: import('@/types').AppSettings;
   onChangeTheme: (m: 'dark' | 'light' | 'system') => void;
   onChangeHomeStyle: (s: 'card' | 'list') => void;
+  onToggle: (k: NonNullable<SettingItem['toggleKey']>) => void;
+  onNav: (to: string) => void;
 }) {
+  const interactive = !!(item.to || item.onTap);
+
+  const toggleValue = (() => {
+    if (item.toggleKey === 'thousandsSeparator') return settings.thousandsSeparator !== '';
+    if (item.toggleKey === 'iCloudSyncEnabled') return settings.iCloudSyncEnabled;
+    if (item.toggleKey === 'hapticEnabled') return settings.hapticEnabled;
+    return false;
+  })();
+
+  const handleClick = () => {
+    if (item.onTap) item.onTap();
+    else if (item.to) onNav(item.to);
+  };
+
+  const Tag = interactive ? 'button' : 'div';
+
   return (
-    <div className="flex items-center gap-3 px-4 py-3.5 active:bg-black/[0.02]">
+    <Tag
+      onClick={interactive ? handleClick : undefined}
+      className="w-full flex items-center gap-3 px-4 py-3.5 active:bg-black/[0.02] text-left"
+    >
       <div
         className={`w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden shrink-0 ${
           NEEDS_ICON_BG.has(item.iconKey)
@@ -196,7 +257,7 @@ function SettingRow({
             { id: 'light', label: '浅色' },
             { id: 'dark', label: '深色' },
           ]}
-          value={themeMode}
+          value={settings.themeMode}
           onChange={(v) => onChangeTheme(v as 'system' | 'light' | 'dark')}
         />
       )}
@@ -207,20 +268,25 @@ function SettingRow({
             { id: 'card', label: '默认' },
             { id: 'list', label: '经典' },
           ]}
-          value={homeStyle}
+          value={settings.homeStyle}
           onChange={(v) => onChangeHomeStyle(v as 'card' | 'list')}
         />
       )}
 
-      {item.toggle && <Switch />}
+      {item.toggle && item.toggleKey && (
+        <Switch
+          value={toggleValue}
+          onChange={(e) => { e.stopPropagation(); onToggle(item.toggleKey!); }}
+        />
+      )}
 
       {!item.custom && !item.toggle && (
         <div className="flex items-center gap-1 text-[13px] text-[var(--color-text-tertiary)]">
           {item.value}
-          <ChevronRight size={16} />
+          {(item.to || item.onTap) && <ChevronRight size={16} />}
         </div>
       )}
-    </div>
+    </Tag>
   );
 }
 
@@ -244,11 +310,23 @@ function SegControl({ options, value, onChange }: {
   );
 }
 
-function Switch() {
+function Switch({ value, onChange }: {
+  value: boolean;
+  onChange: (e: React.MouseEvent) => void;
+}) {
   return (
-    <div className="w-10 h-6 rounded-full bg-[var(--color-bg-elev-3)] relative">
-      <div className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow" />
-    </div>
+    <button
+      onClick={onChange}
+      className={`relative w-11 h-[26px] rounded-full transition-colors shrink-0 ${
+        value ? 'bg-[var(--color-brand-deep)]' : 'bg-[var(--color-bg-elev-3)]'
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 w-[22px] h-[22px] rounded-full bg-white shadow transition-all ${
+          value ? 'left-[21px]' : 'left-0.5'
+        }`}
+      />
+    </button>
   );
 }
 

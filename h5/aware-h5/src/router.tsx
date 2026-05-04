@@ -10,6 +10,11 @@ import { ItemDetailPage } from './pages/ItemDetail';
 import { SubscribePage } from './pages/Subscribe';
 import { WelcomePage } from './pages/Welcome';
 import { OnboardingPage } from './pages/Onboarding';
+import { CategoryManagementPage } from './pages/CategoryManagement';
+import { TagManagementPage } from './pages/TagManagement';
+import { BackupRestorePage } from './pages/BackupRestore';
+import { AppLockPage } from './pages/AppLock';
+import { LegalPage } from './pages/Legal';
 import { useApplyTheme } from './lib/theme';
 
 const WELCOMED_KEY = 'aware-welcomed';
@@ -71,6 +76,13 @@ export const router = createBrowserRouter([
       { path: '/trend', element: <TrendPage /> },
       { path: '/wish', element: <WishPage /> },
       { path: '/settings', element: <SettingsPage /> },
+      // Settings 二级页
+      { path: '/settings/categories', element: <CategoryManagementPage /> },
+      { path: '/settings/tags', element: <TagManagementPage /> },
+      { path: '/settings/backup', element: <BackupRestorePage /> },
+      { path: '/settings/lock', element: <AppLockPage /> },
+      { path: '/settings/terms', element: <LegalPage kind="terms" /> },
+      { path: '/settings/privacy', element: <LegalPage kind="privacy" /> },
       // 这些路径在 TabBar 里被自动隐藏
       { path: '/add', element: <AddPage /> },
       { path: '/item/:id', element: <ItemDetailPage /> },
