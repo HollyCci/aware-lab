@@ -17,8 +17,7 @@ import { BackupRestorePage } from './pages/BackupRestore';
 import { AppLockPage } from './pages/AppLock';
 import { LegalPage } from './pages/Legal';
 import { useApplyTheme } from './lib/theme';
-
-const WELCOMED_KEY = 'aware-welcomed';
+import { isWelcomed, markWelcomed } from './lib/welcome';
 
 /** 首次访问主 App 时跳到 /welcome（除非用户带 ?skip=1 调试） */
 function useFirstVisitRedirect() {
@@ -28,11 +27,10 @@ function useFirstVisitRedirect() {
     if (typeof window === 'undefined') return;
     const search = new URLSearchParams(loc.search);
     if (search.has('skip')) {
-      localStorage.setItem(WELCOMED_KEY, '1');
+      markWelcomed();
       return;
     }
-    const welcomed = localStorage.getItem(WELCOMED_KEY);
-    if (!welcomed) {
+    if (!isWelcomed()) {
       nav('/welcome', { replace: true });
     }
   }, [nav, loc.search]);
@@ -56,10 +54,6 @@ function RootLayout() {
 function FullScreenLayout() {
   useApplyTheme();
   return <Outlet />;
-}
-
-export function markWelcomed() {
-  localStorage.setItem(WELCOMED_KEY, '1');
 }
 
 export const router = createBrowserRouter([

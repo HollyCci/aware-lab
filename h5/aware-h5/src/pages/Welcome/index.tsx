@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { getIcon } from '@/lib/icons';
-import { markWelcomed } from '@/router';
+import { markWelcomed } from '@/lib/welcome';
 
 const orbitItems = [
   // 7 个真实物品 sticker，按视频里的位置（中心吉祥物周围环绕）

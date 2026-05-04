@@ -4,7 +4,7 @@ import { ChevronLeft, Edit3 } from 'lucide-react';
 import clsx from 'clsx';
 import { useStore } from '@/db/store';
 import { getIcon } from '@/lib/icons';
-import { markWelcomed } from '@/router';
+import { markWelcomed } from '@/lib/welcome';
 import type { Item } from '@/types';
 
 type Step = 'identify' | 'price' | 'target' | 'done';
