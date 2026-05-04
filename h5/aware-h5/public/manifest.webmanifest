@@ -1,0 +1,48 @@
+{
+  "name": "有数 Aware",
+  "short_name": "有数",
+  "description": "记录你的物品 / 资产 / 心愿单，按使用频率与持有时长换算日均成本",
+  "lang": "zh-Hans",
+  "dir": "ltr",
+  "scope": "/",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f3ee",
+  "theme_color": "#a0f030",
+  "categories": ["lifestyle", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "添加物品",
+      "short_name": "添加",
+      "url": "/add?source=pwa-shortcut",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "心愿单",
+      "short_name": "心愿",
+      "url": "/wish?source=pwa-shortcut",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
