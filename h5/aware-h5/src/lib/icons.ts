@@ -4,11 +4,11 @@
  *
  * 文件名格式：`<name>@<scale>x.png`，name 已经在导出时把 / 和空格替换成了 _。
  */
-const modules = import.meta.glob<string>('@/assets/icons/*.png', {
+const modules = import.meta.glob('@/assets/icons/*.png', {
   eager: true,
   import: 'default',
   query: '?url',
-});
+}) as Record<string, string>;
 
 export const iconMap: Record<string, string> = {};
 

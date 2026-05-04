@@ -50,7 +50,7 @@ let _allIcons: string[] | null = null;
 
 function getAllIconNames(): string[] {
   if (_allIcons) return _allIcons;
-  const modules = import.meta.glob('/src/assets/icons/*.png', { eager: true, query: '?url', import: 'default' });
+  const modules = import.meta.glob('/src/assets/icons/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
   const names = Object.keys(modules)
     .map((p) => p.split('/').pop()!.replace(/@[123]x\.png$/, ''))
     .filter((n) =>

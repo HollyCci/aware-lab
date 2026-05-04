@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { useStore } from '@/db/store';
 import { computeMetrics, formatPrice, totalAssets, totalDailyCost } from '@/lib/calc';
 import { getIcon } from '@/lib/icons';
+import type { Item } from '@/types';
 
 type SubTab = 'trend' | 'insight';
 
@@ -172,10 +173,10 @@ function DiscoverRow({ emoji, label, value }: { emoji: string; label: string; va
   );
 }
 
-function RankSection({ items, fmt }: { items: ReturnType<typeof useStore>['items'] extends infer T ? T : never; fmt: (n: number, d?: 0 | 1 | 2) => string }) {
+function RankSection({ items, fmt }: { items: Item[]; fmt: (n: number, d?: 0 | 1 | 2) => string }) {
   const [order, setOrder] = useState<'desc' | 'asc'>('desc');
   const ranked = useMemo(() => {
-    const list = (items as ReturnType<typeof useStore>['items'])
+    const list = items
       .filter(i => i.status === 'inUse' || i.status === 'idle')
       .sort((a, b) => {
         const da = computeMetrics(a).dailyCost;
