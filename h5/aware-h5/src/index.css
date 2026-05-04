@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+/* 字体（直接复用原 App 的字体文件） */
+@font-face {
+  font-family: "AlimamaShuHei";
+  src: url("/fonts/Alimama_ShuHeiTi_Bold.ttf") format("truetype");
+  font-weight: 700 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "WeChatSans";
+  src: url("/fonts/WeChatSansStd-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* 通用 design tokens（两套主题共用） */
+@theme {
+  /* 字体回退链：英文/数字优先系统字体（避免中文字体把字母变 small-caps），中文用 WeChat Sans / 阿里妈妈数黑体 */
+  --font-display: "AlimamaShuHei", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "WeChatSans", "PingFang SC", system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "WeChatSans", "PingFang SC", system-ui, sans-serif;
+
+  /* 品牌色 lime green */
+  --color-brand: #a0f030;
+  --color-brand-deep: #8cd824;
+  --color-brand-soft: #d6f99a;
+  --color-brand-bg: #ecfacc;
+  --color-gold: #f4c430;
+
+  /* 状态色 */
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-error: #ff3b30;
+
+  /* 圆角 */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+}
+
+/* 浅色主题（默认） */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #f4f3ee;
+  --color-bg-elev-1: #ffffff;
+  --color-bg-elev-2: #fafaf6;
+  --color-bg-elev-3: #efeee8;
+  --color-stroke: #ebeae3;
+  --color-divider: #f0efea;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #6b6b6b;
+  --color-text-tertiary: #b2b2b2;
+  --color-text-on-brand: #1a1a1a;
+  --color-text-on-dark: #ffffff;
+  --color-text-on-white: #1a1a1a;     /* 永远白底上的文字（segmented 选中态等） */
+  --color-btn-dark: #1a1a1a;
+  --color-fab-bg: #1a1a1a;             /* 浮动 FAB 背景：浅色用黑色 */
+  --color-fab-fg: #ffffff;             /* 浮动 FAB 图标色 */
+  --color-icon-tile-bg: transparent;   /* 浅色卡片下图标无需补底 */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-tabbar: 0 8px 32px -8px rgba(0, 0, 0, 0.12);
+  --shadow-fab: 0 10px 28px -6px rgba(0, 0, 0, 0.32);
+}
+
+/* 暗色主题 */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0d0d0d;
+  --color-bg-elev-1: #1a1a1a;
+  --color-bg-elev-2: #242424;
+  --color-bg-elev-3: #2e2e2e;
+  --color-stroke: #2c2c2c;
+  --color-divider: #1f1f1f;
+  --color-text: #f5f5f5;
+  --color-text-secondary: #9b9b9b;
+  --color-text-tertiary: #666666;
+  --color-text-on-brand: #1a1a1a;       /* lime 永远是浅色，文字固定黑 */
+  --color-text-on-white: #1a1a1a;       /* 永远白底上的文字 */
+  --color-btn-dark: #ffffff;            /* 暗色下"主按钮"反色为白底 */
+  --color-text-on-dark: #1a1a1a;        /* 白底按钮上的字变黑 */
+  --color-fab-bg: var(--color-brand);   /* 暗色下 FAB 用 lime green，更品牌化、不刺眼 */
+  --color-fab-fg: #1a1a1a;              /* lime 上的黑+号 */
+  --color-icon-tile-bg: #f0f0ee;        /* 暗色下给透明描边图标补一个近白底，让原色 sticker 浮起来 */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-tabbar: 0 8px 32px -8px rgba(0, 0, 0, 0.6);
+  --shadow-fab: 0 12px 32px -6px rgba(160, 240, 48, 0.35);
+}
+
+/* 系统跟随：当 data-theme="system" 且系统是 dark 时启用暗色 */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="system"] {
+    color-scheme: dark;
+    --color-bg: #0d0d0d;
+    --color-bg-elev-1: #1a1a1a;
+    --color-bg-elev-2: #242424;
+    --color-bg-elev-3: #2e2e2e;
+    --color-stroke: #2c2c2c;
+    --color-divider: #1f1f1f;
+    --color-text: #f5f5f5;
+    --color-text-secondary: #9b9b9b;
+    --color-text-tertiary: #666666;
+    --color-text-on-brand: #0d0d0d;
+    --color-btn-dark: #2a2a2a;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-tabbar: 0 8px 32px -8px rgba(0, 0, 0, 0.6);
+    --shadow-fab: 0 10px 28px -6px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* 基础样式：移动端 H5 reset + 安全区 */
+:root {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  overscroll-behavior: none;
+}
+
+* { transition: background-color 0.18s ease, border-color 0.18s ease; }
+
+button { font-family: inherit; }
+
+/* 安全区 */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* 隐藏滚动条但可滚动 */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* 数字字体（标题、价格等突出） */
+.font-display { font-family: var(--font-display); letter-spacing: -0.01em; }

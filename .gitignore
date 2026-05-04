@@ -1,0 +1,45 @@
+# macOS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Node / front-end build
+node_modules/
+dist/
+build/
+.cache/
+.parcel-cache/
+*.log
+.env
+.env.local
+
+# 视频/图片帧（本地分析用，不进仓库）
+/tmp/aware_frames/
+
+# ────────────────────────────────────────────────────────────────
+# iOS 部分：原始 App 二进制 + 第三方 framework 编译产物 不进仓库
+# 只保留自己写的逆向脚本/dylib 源码 + 分析笔记
+# ────────────────────────────────────────────────────────────────
+
+# IPA 包（原始 / patched 全部不传）
+*.ipa
+*.ip.i
+*.i
+
+# 解包后的 App 内容（含原始资产、第三方 framework、加密资源）
+ios/**/extracted/
+
+# dylib 编译产物（保留 .m 源码即可，dylib 由源码本地编译）
+*.dylib
+
+# IDA 工程文件（数据库 / 临时文件）
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+
+# 临时与生成产物
+*.entitlements.plist
+patched_*.bin
