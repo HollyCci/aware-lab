@@ -1,88 +1,68 @@
 # aware-lab
 
-> 「有数 / Aware」iOS App 的个人实验室：包含**自家 App** 的逆向分析笔记、运行时补丁源码，以及一份 **H5 复刻**（React + TypeScript + Tailwind v4）。
+自己开发的 iOS App「有数 / Aware」的个人小工坊。两件事：
 
-## 重要声明
+一是给自家的 App 写了个运行时补丁，方便上线前用 Proxyman 在 TrollStore 环境抓包测自己的网络层（原 App 自带 VPN/代理检测，没补丁的话开了代理就直接报错）。
 
-本仓库的所有内容都**只针对作者本人开发的 iOS App 「有数 / Aware」**：
+二是把整套 UI 用 React + Tailwind 重新撸了一遍 H5 版，做的时候没看任何源码，纯靠拿 IPA 解出来的字体、图标、`Localizable.strings` 当参考，加上自己录的一段操作视频抽帧对着画。最后做出来跟原 App 视觉差不多 7 成像，主流程能打通——添加物品、看日均成本、定回本目标、订阅页、暗色模式什么的都跑得起来，所有数据走 IndexedDB，刷新也不丢。
 
-- App 完全是作者自己开发并发布
-- 所有逆向分析、补丁、资产解析都是在自己的代码上做的（属于对自己产品的内部测试与跨端复刻）
-- 所有代码、文档、笔记全部由作者本人编写
-
-**本仓库不包含**任何第三方资产或二进制：
-
-- 不上传任何 IPA 包（`.ipa`、`.ip.i` 全部 gitignore）
-- 不上传 App 解包后的内容（`extracted/` gitignore）
-- 不上传第三方开源框架的编译产物（RxSwift / Alamofire / Realm / Lottie / DGCharts 等的 framework binary 全部 gitignore）
-- 不上传 `Assets.car`、加密的 Lottie `.dat` 等原始资源
-- 不上传字体文件之外的资源（用于 H5 还原的 PNG 图标也不进仓库 —— 它们在源 App 的 Asset Catalog 内）
-
-## 目录结构
-
-```
-aware-lab/
-├── h5/aware-h5/              # H5 复刻：React 19 + Vite + Tailwind v4
-│   ├── src/
-│   │   ├── pages/            # 9 个页面（Welcome / Onboarding / Home / Wish /
-│   │   │                     #          Trend / Settings / Add / ItemDetail / Subscribe）
-│   │   ├── components/       # TabBar / IconPicker / icons
-│   │   ├── db/               # zustand store + IndexedDB 持久化
-│   │   ├── lib/              # 计算 / 主题 / 图标目录
-│   │   └── types/
-│   ├── public/fonts/         # 仅字体（自家 App 使用的 Alimama_ShuHeiTi、WeChatSans）
-│   └── ...
-└── ios/有数_26-05-03/
-    └── dylib_src/
-        └── AwarePatch.m      # 运行时 patch 源码（去除 VPN/代理检测，TrollStore 测试用）
-```
-
-## H5 复刻
-
-### 技术栈
-
-- React 19 + TypeScript + Vite 7（SWC）
-- Tailwind CSS v4（`@theme` design tokens + `data-theme` 主题切换）
-- React Router v7
-- zustand + idb-keyval（IndexedDB 持久化，无需后端）
-- framer-motion（FAB / TabBar / 卡片微动效）
-- lucide-react（线性图标）
-
-### 已实现的核心功能
-
-- 9 个完整页面：欢迎页、4 步引导、首页、心愿单、趋势/洞悉、添加/编辑、物品详情、订阅页、设置
-- 完整的浅色 + 暗色主题（设置内可切换，包含 `system / light / dark` 三档）
-- IconPicker bottom sheet：3 tab（相册 / Emoji / 3D 图标）+ 10 类 + 搜索
-- 数据持久化：所有物品 / 心愿 / 设置存 IndexedDB，刷新不丢
-- 微动效：FAB tap 弹性、TabBar 选中态 layoutId 滑动、物品卡片 tap 缩放
-- 首次访问引导链路：自动跳 `/welcome` → 4 步引导 → 进首页
-
-### 运行
+## 跑起来
 
 ```bash
 cd h5/aware-h5
 pnpm install
 pnpm dev
-# 默认 http://localhost:5173
 ```
 
-### 构建
+默认 `http://localhost:5173`，第一次进会自动走欢迎页 + 4 步引导。想跳过引导直接看主界面，加个 `?skip=1`。
+
+构建：
 
 ```bash
-cd h5/aware-h5
-pnpm build       # 输出到 dist/
-pnpm preview     # 本地预览构建产物
+pnpm build && pnpm preview
 ```
 
-## iOS 部分（仅自家 App 内部测试）
+## 目录里有什么
 
-`ios/有数_26-05-03/dylib_src/AwarePatch.m` 是为 TrollStore 环境写的运行时补丁源码：
+```
+h5/aware-h5/                React 19 + Vite + Tailwind v4 的 H5 项目
+└── src/
+    ├── pages/              9 个页面：Welcome / Onboarding / Home / Wish /
+    │                       Trend / Settings / Add / ItemDetail / Subscribe
+    ├── components/         TabBar / IconPicker / icons
+    ├── db/                 zustand store，写到 IndexedDB
+    ├── lib/                日均成本/达标进度等业务计算 + 主题切换
+    └── assets/icons/       直接复用原 App 的 PNG 图标
 
-- Hook 自家 App 的 `NetworkSecurityChecker`，绕过 VPN / HTTP 代理 / SOCKS 代理 / 网络接口检测
-- 用途：用 Proxyman 抓包测试自己 App 的网络请求
+ios/有数_26-05-03/dylib_src/
+└── AwarePatch.m            TrollStore 用的运行时补丁源码
+                            hook 自家的 NetworkSecurityChecker，
+                            把 VPN/HTTP 代理/SOCKS/网卡名 4 个检测都返回 false
+```
 
-不带任何 IPA、二进制产物或解包资源 —— 只放源码。
+## 仓库里 *没有* 什么
 
-## 协议
+不是没做，是有意没传：
 
-MIT License — 仅适用于本仓库内**作者自己编写的代码**（H5 项目源码 + AwarePatch.m）。
+- **任何 `.ipa` 文件**——4 个 patched 版本（dev/release/pro 等）每个都 32MB，没必要扔到 git 上
+- **解包后的 `extracted/` 整个目录**——里头有 RxSwift / Alamofire / RealmSwift / Lottie 这些第三方框架的编译产物，扔 public 仓库不合适。Assets.car（14M）和加密的 `3D_emoji.dat` 也在这层
+- **`AwarePatch.dylib` 编译产物**——留 `.m` 源码就够了，需要的话本地 `clang` 一下就能出
+- **`node_modules/`、`dist/`、`.idea/`、`.DS_Store`** 这些标准忽略
+
+如果克隆下来想完整跑 iOS 那部分，需要自己有原 IPA 才能解包 + 重打包。
+
+## 关于 H5 复刻的完成度
+
+视觉做到 90% 多，主流程贯通，但很多设置二级页（分类管理、标签管理、备份与恢复、密码与安全等）目前只有入口的卡片和 `>` 箭头，点进去是空的——视频里没演示这些页面的内部，做不出 1:1，留着以后慢慢补。
+
+iOS 原生的能力（iCloud 同步、应用图标切换、相机、震动反馈）H5 天然做不了，跳过。
+
+真彩色的 Lottie sticker（视频里那个特别精致的 iPhone15 蓝屏贴纸）是从加密的 `3D_emoji.dat` 解的，没解出来，临时用了 Asset Catalog 里的 PNG 顶替——视觉上稍微逊一点。
+
+## 一些声明
+
+App 是自己开发的，所有逆向和补丁都只动自己的代码、只在自己的设备上测。仓库里所有 H5 代码都是自己写的（含 AI 协助写的部分），原 App 的 PNG 图标和字体是项目当时购买/授权的素材，自己拥有再分发的权利。
+
+第三方开源框架（RxSwift / Alamofire 等）的编译产物虽然许可证（MIT/Apache）允许转发，但按惯例不放进这个仓库。
+
+许可证 MIT，仅适用于本仓库内自己写的代码。
