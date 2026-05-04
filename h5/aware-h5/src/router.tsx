@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { createBrowserRouter, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { TabBar } from './components/TabBar';
+import { AppLockGate } from './components/AppLockGate';
 import { HomePage } from './pages/Home';
 import { TrendPage } from './pages/Trend';
 import { AddPage } from './pages/Add';
@@ -41,12 +42,14 @@ function RootLayout() {
   useApplyTheme();
   useFirstVisitRedirect();
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex flex-col relative">
-      <main className="flex-1 pb-[100px]">
-        <Outlet />
-      </main>
-      <TabBar />
-    </div>
+    <AppLockGate>
+      <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex flex-col relative">
+        <main className="flex-1 pb-[100px]">
+          <Outlet />
+        </main>
+        <TabBar />
+      </div>
+    </AppLockGate>
   );
 }
 

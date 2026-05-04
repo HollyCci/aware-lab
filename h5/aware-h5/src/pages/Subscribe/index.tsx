@@ -131,6 +131,11 @@ export function SubscribePage() {
       {/* 底部 CTA */}
       <div className="fixed bottom-0 inset-x-0 pb-safe bg-gradient-to-t from-[var(--color-bg)] via-[var(--color-bg)]/95 to-transparent pt-6 px-4">
         <button
+          onClick={() => window.alert(
+            `H5 演示版无支付能力（也不会有，这是个人 lab 项目）。\n\n` +
+            `选中套餐：${sku.name} ¥${sku.price}\n` +
+            `如果你想体验付费版，请去 iOS 「有数 / Aware」App Store 下载。`,
+          )}
           className="
             w-full h-[52px] rounded-full bg-[var(--color-brand)] text-[#1a1a1a]
             font-bold text-[16px] flex items-center justify-center gap-2
@@ -140,7 +145,7 @@ export function SubscribePage() {
           立即解锁
         </button>
         <p className="text-[10px] text-center text-[var(--color-text-tertiary)] mt-2">
-          由 Apple 担保 · 随时取消
+          H5 演示版本 · 不接入支付
         </p>
       </div>
     </div>
