@@ -39,7 +39,11 @@ export function ItemDetailPage() {
           <button onClick={() => nav(-1)} className="w-9 h-9 flex items-center justify-center -ml-1.5">
             <X size={26} strokeWidth={2.6} />
           </button>
-          <button className="w-9 h-9 flex items-center justify-center text-[var(--color-text)]">
+          <button
+            onClick={() => nav(`/add/${item.id}`)}
+            className="w-9 h-9 flex items-center justify-center text-[var(--color-text)]"
+            aria-label="编辑"
+          >
             <Edit3 size={20} />
           </button>
         </div>

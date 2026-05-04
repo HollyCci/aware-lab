@@ -45,8 +45,8 @@ export function WishPage() {
           {wishlist.map(w => (
             <li
               key={w.id}
-              onClick={() => nav('/add')}
-              className="rounded-[24px] bg-[var(--color-bg-elev-1)] p-4 shadow-[var(--shadow-card)] flex items-center gap-3 active:scale-[0.99] transition"
+              onClick={() => nav(`/add/${w.id}`)}
+              className="rounded-[24px] bg-[var(--color-bg-elev-1)] p-4 shadow-[var(--shadow-card)] flex items-center gap-3 active:scale-[0.99] transition cursor-pointer"
             >
               <div className="w-14 h-14 rounded-2xl bg-[var(--color-bg-elev-2)] flex items-center justify-center overflow-hidden shrink-0">
                 {w.iconName && <img src={getIcon(w.iconName)} alt="" className="w-full h-full object-contain" />}

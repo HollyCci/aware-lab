@@ -85,6 +85,7 @@ export const router = createBrowserRouter([
       { path: '/settings/privacy', element: <LegalPage kind="privacy" /> },
       // 这些路径在 TabBar 里被自动隐藏
       { path: '/add', element: <AddPage /> },
+      { path: '/add/:id', element: <AddPage /> },          // 编辑 item 或 wish（同一组件按 id 识别）
       { path: '/item/:id', element: <ItemDetailPage /> },
       { path: '/subscribe', element: <SubscribePage /> },
     ],
