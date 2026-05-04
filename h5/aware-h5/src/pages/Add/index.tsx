@@ -110,6 +110,8 @@ export function AddPage() {
         updateItem(editingItem.id, itemData);
       } else {
         addItem({ ...itemData, createdAt: now });
+        // 心愿 → 资产 迁移：把原 wish 删了，避免重复
+        if (editingWish) removeWish(editingWish.id);
       }
     } else {
       const wishData: WishItem = {
@@ -124,6 +126,8 @@ export function AddPage() {
         updateWish(editingWish.id, wishData);
       } else {
         addWish(wishData);
+        // 资产 → 心愿 迁移：把原 item 删了
+        if (editingItem) removeItem(editingItem.id);
       }
     }
     nav(-1);
@@ -150,37 +154,25 @@ export function AddPage() {
             <X size={26} strokeWidth={2.6} />
           </button>
           <div className="flex items-center justify-center gap-5">
-            {isEdit ? (
-              // 编辑模式：直接显示当前 kind 作为标题（不能切换 — 类型是创建时定下的）
-              <h2 className="relative font-display text-[18px] px-1">
-                <span
-                  className="absolute left-0 right-0 -bottom-0.5 h-1.5 rounded-full -z-10"
-                  style={{ background: 'var(--color-brand)' }}
-                />
-                <span className="text-[var(--color-text)]">
-                  编辑{mode === 'asset' ? '资产' : '心愿'}
+            {(['asset', 'wish'] as Mode[]).map(m => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className="relative font-display text-[18px] px-1"
+              >
+                {/* lime 装饰条放在文字下面（z-10 在文字之上但只在底部一小条），
+                    选中态文字本身用主题色保证两个 mode 下都跟 page bg 有对比 */}
+                {mode === m && (
+                  <span
+                    className="absolute left-0 right-0 -bottom-0.5 h-1.5 rounded-full -z-10"
+                    style={{ background: 'var(--color-brand)' }}
+                  />
+                )}
+                <span className={mode === m ? 'text-[var(--color-text)]' : 'text-[var(--color-text-tertiary)]'}>
+                  {m === 'asset' ? '资产' : '心愿'}
                 </span>
-              </h2>
-            ) : (
-              // 新增模式：可切换 toggle
-              (['asset', 'wish'] as Mode[]).map(m => (
-                <button
-                  key={m}
-                  onClick={() => setMode(m)}
-                  className="relative font-display text-[18px] px-1"
-                >
-                  {mode === m && (
-                    <span
-                      className="absolute left-0 right-0 -bottom-0.5 h-1.5 rounded-full -z-10"
-                      style={{ background: 'var(--color-brand)' }}
-                    />
-                  )}
-                  <span className={mode === m ? 'text-[var(--color-text)]' : 'text-[var(--color-text-tertiary)]'}>
-                    {m === 'asset' ? '资产' : '心愿'}
-                  </span>
-                </button>
-              ))
-            )}
+              </button>
+            ))}
           </div>
           <div className="flex justify-end">
             {isEdit && (
