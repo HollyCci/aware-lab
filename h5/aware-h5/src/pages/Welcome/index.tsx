@@ -58,7 +58,12 @@ export function WelcomePage() {
           拥抱长期主义，让消费心中有数
         </p>
         <button
-          onClick={() => { markWelcomed(); nav('/onboarding'); }}
+          onClick={() => {
+            // 先写 localStorage 标记已看过，再用 microtask 推迟 nav 一帧，
+            // 避免和 RootLayout 的 useFirstVisitRedirect 在 React 批量更新里抢路由
+            markWelcomed();
+            queueMicrotask(() => nav('/onboarding'));
+          }}
           className="
             mt-7 w-full h-[52px] rounded-full
             bg-[var(--color-btn-dark)] text-[var(--color-brand)]

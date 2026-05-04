@@ -10,7 +10,7 @@ export function WishPage() {
 
   const total = wishlist.reduce((s, w) => s + w.price, 0);
   const fmt = (n: number) =>
-    formatPrice(n, { symbol: settings.currencySymbol, decimals: settings.decimalPlaces });
+    formatPrice(n, { symbol: settings.currencySymbol, decimals: settings.decimalPlaces, thousands: settings.thousandsSeparator });
 
   return (
     <div className="min-h-full">

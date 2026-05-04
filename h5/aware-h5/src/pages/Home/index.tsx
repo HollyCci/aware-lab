@@ -36,6 +36,8 @@ export function HomePage() {
   const settings = useStore(s => s.settings);
   const removeItems = useStore(s => s.removeItems);
   const setItemsStatus = useStore(s => s.setItemsStatus);
+  const multiMode = useStore(s => s.homeMultiSelectMode);
+  const setMultiMode = useStore(s => s.setHomeMultiSelectMode);
   const nav = useNavigate();
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -52,8 +54,7 @@ export function HomePage() {
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const filterActive = filterCatIds.length + filterTagIds.length > 0 || filterAchieved !== 'all';
 
-  // 多选
-  const [multiMode, setMultiMode] = useState(false);
+  // 多选 selectedIds 仍然 local，因为只在多选过程中临时用
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const toggleSelect = (id: string) => {
@@ -128,7 +129,7 @@ export function HomePage() {
   }, [items, statusFilter, sortKey, sortDir, filterCatIds, filterTagIds, filterAchieved]);
 
   const fmt = (n: number, dec: 0 | 1 | 2 = settings.decimalPlaces) =>
-    formatPrice(n, { symbol: settings.currencySymbol, decimals: dec });
+    formatPrice(n, { symbol: settings.currencySymbol, decimals: dec, thousands: settings.thousandsSeparator });
 
   const handleBatchDelete = () => {
     if (selectedIds.size === 0) return;

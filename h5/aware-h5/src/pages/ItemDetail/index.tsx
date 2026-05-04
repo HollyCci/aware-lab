@@ -23,7 +23,7 @@ export function ItemDetailPage() {
 
   const m = computeMetrics(item);
   const fmt = (n: number, dec: 0 | 1 | 2 = settings.decimalPlaces) =>
-    formatPrice(n, { symbol: settings.currencySymbol, decimals: dec });
+    formatPrice(n, { symbol: settings.currencySymbol, decimals: dec, thousands: settings.thousandsSeparator });
   const cat = useStore.getState().categories.find(c => c.id === item.categoryId);
 
   return (

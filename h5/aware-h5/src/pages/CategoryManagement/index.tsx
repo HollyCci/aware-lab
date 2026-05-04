@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, Edit2, Trash2, GripVertical, X } from 'lucide-react';
+import { ChevronLeft, Plus, Edit2, Trash2, ArrowUp, ArrowDown, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '@/db/store';
 import { getIcon } from '@/lib/icons';
@@ -21,7 +21,6 @@ export function CategoryManagementPage() {
   const [draftIcon, setDraftIcon] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
 
   // 按 order 排序，"others" 永远最后
   const sorted = [...categories].sort((a, b) => {
@@ -29,6 +28,23 @@ export function CategoryManagementPage() {
     if (b.id === 'others') return -1;
     return (a.order ?? 999) - (b.order ?? 999);
   });
+
+  // 上/下移：触屏友好的排序方式（替代 HTML5 drag）
+  const orderable = sorted.filter(c => c.id !== 'others').map(c => c.id);
+  const moveUp = (id: string) => {
+    const idx = orderable.indexOf(id);
+    if (idx <= 0) return;
+    const next = [...orderable];
+    [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+    reorderCategories(next);
+  };
+  const moveDown = (id: string) => {
+    const idx = orderable.indexOf(id);
+    if (idx === -1 || idx === orderable.length - 1) return;
+    const next = [...orderable];
+    [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+    reorderCategories(next);
+  };
 
   const usageCount = (id: string) => items.filter(i => i.categoryId === id).length;
 
@@ -67,22 +83,6 @@ export function CategoryManagementPage() {
     }
   };
 
-  // 简单的 HTML5 drag-and-drop 排序
-  const handleDragStart = (id: string) => setDraggingId(id);
-  const handleDragOver = (e: React.DragEvent, overId: string) => {
-    e.preventDefault();
-    if (!draggingId || draggingId === overId || overId === 'others') return;
-    const orderable = sorted.filter(c => c.id !== 'others').map(c => c.id);
-    const fromIdx = orderable.indexOf(draggingId);
-    const toIdx = orderable.indexOf(overId);
-    if (fromIdx === -1 || toIdx === -1) return;
-    const next = [...orderable];
-    next.splice(fromIdx, 1);
-    next.splice(toIdx, 0, draggingId);
-    reorderCategories(next);
-  };
-  const handleDragEnd = () => setDraggingId(null);
-
   return (
     <div className="min-h-full">
       <header className="pt-safe sticky top-0 z-10 bg-[var(--color-bg)]/95 backdrop-blur-lg">
@@ -95,7 +95,7 @@ export function CategoryManagementPage() {
       </header>
 
       <p className="px-5 text-[12px] text-[var(--color-text-secondary)] mb-3">
-        长按拖动调整顺序，「其他」分类不可删除（兜底用）。
+        用 ↑ ↓ 按钮调整顺序，「其他」分类不可删除（兜底用）。
       </p>
 
       <section className="px-4">
@@ -104,21 +104,35 @@ export function CategoryManagementPage() {
             const isOthers = c.id === 'others';
             const isEditing = editingId === c.id;
             const used = usageCount(c.id);
+            const idxInOrderable = orderable.indexOf(c.id);
+            const isFirst = idxInOrderable === 0;
+            const isLast = idxInOrderable === orderable.length - 1;
             return (
               <div
                 key={c.id}
-                draggable={!isOthers && !isEditing}
-                onDragStart={() => handleDragStart(c.id)}
-                onDragOver={(e) => handleDragOver(e, c.id)}
-                onDragEnd={handleDragEnd}
-                className={`flex items-center gap-3 px-3 py-3 ${draggingId === c.id ? 'opacity-40' : ''}`}
+                className="flex items-center gap-2 px-3 py-3"
               >
-                {!isOthers && !isEditing && (
-                  <span className="text-[var(--color-text-tertiary)] cursor-grab active:cursor-grabbing">
-                    <GripVertical size={16} />
-                  </span>
+                {/* 上下箭头排序（手机 touch 友好，替代 HTML5 drag） */}
+                {!isOthers && !isEditing ? (
+                  <div className="flex flex-col -gap-px shrink-0">
+                    <button
+                      onClick={() => moveUp(c.id)}
+                      disabled={isFirst}
+                      className="w-6 h-5 flex items-center justify-center text-[var(--color-text-tertiary)] disabled:opacity-25 active:bg-[var(--color-bg-elev-2)] rounded"
+                    >
+                      <ArrowUp size={12} strokeWidth={2.5} />
+                    </button>
+                    <button
+                      onClick={() => moveDown(c.id)}
+                      disabled={isLast}
+                      className="w-6 h-5 flex items-center justify-center text-[var(--color-text-tertiary)] disabled:opacity-25 active:bg-[var(--color-bg-elev-2)] rounded"
+                    >
+                      <ArrowDown size={12} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                ) : (
+                  <span className="w-6 shrink-0" />
                 )}
-                {isOthers && <span className="w-4" />}
 
                 <button
                   onClick={() => isEditing ? setPickerOpen(true) : null}

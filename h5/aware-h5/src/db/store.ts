@@ -28,6 +28,7 @@ interface AppStore {
   // UI 状态
   viewMode: ViewMode;
   selectedCategoryId: string | null;
+  homeMultiSelectMode: boolean;       // 首页多选模式（同步给 TabBar 自动隐藏用）
 
   // 设置
   settings: AppSettings;
@@ -63,6 +64,7 @@ interface AppStore {
 
   setViewMode: (m: ViewMode) => void;
   selectCategory: (id: string | null) => void;
+  setHomeMultiSelectMode: (b: boolean) => void;
   updateSettings: (patch: Partial<AppSettings>) => void;
   resetAll: () => void;
 }
@@ -90,6 +92,7 @@ export const useStore = create<AppStore>()(
       wishlist: seedWish,
       viewMode: 'card',
       selectedCategoryId: null,
+      homeMultiSelectMode: false,
       settings: defaultSettings,
 
       addItem: (item) => set(s => ({ items: [item, ...s.items] })),
@@ -194,6 +197,7 @@ export const useStore = create<AppStore>()(
 
       setViewMode: (m) => set({ viewMode: m }),
       selectCategory: (id) => set({ selectedCategoryId: id }),
+      setHomeMultiSelectMode: (b) => set({ homeMultiSelectMode: b }),
       updateSettings: (patch) => set(s => ({ settings: { ...s.settings, ...patch } })),
       resetAll: () => set({
         items: seedItems,

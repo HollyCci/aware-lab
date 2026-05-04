@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import { Plus } from 'lucide-react';
 import { HomeIcon, WishIcon, TrendIcon, SettingsIcon } from './icons';
+import { useStore } from '@/db/store';
 
 const tabs = [
   { to: '/', icon: HomeIcon, label: '有数' },
@@ -14,6 +15,7 @@ const tabs = [
 export function TabBar() {
   const loc = useLocation();
   const nav = useNavigate();
+  const multiMode = useStore(s => s.homeMultiSelectMode);
 
   // 模态全屏页面隐藏 TabBar
   if (
@@ -25,6 +27,9 @@ export function TabBar() {
   ) {
     return null;
   }
+
+  // 首页多选模式时也隐藏（让出位置给浮动批量操作栏）
+  if (multiMode) return null;
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 pb-safe pointer-events-none">
