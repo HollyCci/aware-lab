@@ -34,12 +34,24 @@ ios/              iOS 相关的本地实验代码
 
 ## 技术栈
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- Zustand
-- IndexedDB
+- **React 19**：页面和组件开发
+- **TypeScript**：类型约束和业务模型定义
+- **Vite**：本地开发、构建和预览
+- **Tailwind CSS v4**：样式系统、主题变量和响应式布局
+- **React Router**：页面路由
+- **Zustand**：轻量状态管理
+- **IndexedDB**：浏览器本地持久化
+- **Framer Motion**：页面和组件微动效
+- **Lucide React**：基础图标
+- **pnpm**：包管理
+
+主要实现方向：
+
+- 移动端 H5 布局
+- 浅色 / 深色主题
+- 本地数据读写
+- 表单与列表交互
+- 订阅页、设置页、详情页等常见产品页面
 
 ## 说明
 
