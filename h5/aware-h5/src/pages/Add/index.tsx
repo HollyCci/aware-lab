@@ -157,13 +157,15 @@ export function AddPage() {
                 disabled={isEdit}
                 className="relative font-display text-[18px] px-1 disabled:opacity-100"
               >
+                {/* lime 装饰条放在文字下面（z-10 在文字之上但只在底部一小条），
+                    选中态文字本身用主题色保证两个 mode 下都跟 page bg 有对比 */}
                 {mode === m && (
                   <span
-                    className="absolute left-0 right-0 -bottom-0.5 h-2 rounded-full -z-10"
+                    className="absolute left-0 right-0 -bottom-0.5 h-1.5 rounded-full -z-10"
                     style={{ background: 'var(--color-brand)' }}
                   />
                 )}
-                <span className={mode === m ? 'text-[#1a1a1a]' : 'text-[var(--color-text-tertiary)]'}>
+                <span className={mode === m ? 'text-[var(--color-text)]' : 'text-[var(--color-text-tertiary)]'}>
                   {m === 'asset' ? '资产' : '心愿'}
                 </span>
               </button>
